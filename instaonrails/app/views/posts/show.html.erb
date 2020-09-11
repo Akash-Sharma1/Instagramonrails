@@ -3,6 +3,10 @@
     <%= @post.caption %>
 </p>
 
+<%= image_tag @post.image.url(:medium) %>
+
+
+
 <h2>Comments</h2>
 <% @post.comments.each do |comment| %>
 

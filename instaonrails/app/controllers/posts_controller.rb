@@ -13,8 +13,11 @@ class PostsController < ApplicationController
     
     def create
         @post = Post.create(post_params)
-        @post.save
-        redirect_to @post
+        if @post.save
+            redirect_to @post
+        else
+            render 'new'
+        end
     end
     
     def edit
@@ -35,7 +38,7 @@ class PostsController < ApplicationController
 
     private
     def post_params
-        params.require(:post).permit(:caption)
+        params.require(:post).permit(:caption, :image)
     end
     
 end

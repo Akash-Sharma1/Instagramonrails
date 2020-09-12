@@ -1,8 +1,14 @@
 class PostsController < ApplicationController
-    def index
-        @post = Post.all
-    end
 
+    def index
+        @POST_PER_PAGE = 2
+        @offset = params.fetch(:offset,0)
+        @post = Post.offset(@offset).limit(@POST_PER_PAGE)
+        respond_to do |format|
+            format.html 
+            format.js
+        end
+    end
     def show
         @post = Post.find(params[:id])
     end

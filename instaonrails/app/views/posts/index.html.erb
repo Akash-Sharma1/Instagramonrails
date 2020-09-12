@@ -1,24 +1,49 @@
 <h1>Listing Post</h1>
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+ 
 
 <%= link_to 'New post', new_post_path %>
 
-<table>
-    <tr>
-        <th>caption</th>
-        <th>show</th>
-        <th>edit</th>
-        <th>delete</th>
-    </tr>
+<div id="content">
+    <%= render @post %>
+</div>
 
-    <% @post.each do |post| %>
-    <tr>
-        <td><%= post.caption %></td>
-        <td><%= link_to 'Show', post_path(post) %></td>
-        <td><%= link_to 'edit', edit_post_path(post) %></td>
-        <td><%= link_to 'Destroy', post_path(post),
-              method: :delete,
-              data: { confirm: 'Are you sure?' } %></td>
-    </tr>
-    <% end %>
-</table>
+<br/><br/>
+
+<script>
+    FIXED_OFFSET = <%= @POST_PER_PAGE %>
+    var offset = 0;
+    offset += FIXED_OFFSET;
+
+    function tempfunc(){
+        $.ajax({
+            type: "GET",
+            url: '<%= posts_path %>'+'?offset='+offset,
+            success: function(data){
+                
+                post_content = ""
+                let start_idx = data.indexOf("<div id=\"content\">") + "<div id=\"content\">".length;
+                if(start_idx == -1)return;
+                data = data.substr(start_idx, data.length)
+                
+                let end_idx = data.indexOf("</div>")
+                data = data.substr(0, end_idx)
+
+                if(data.length < 10)return ;
+                
+                post_content = data;
+                document.getElementById("content").innerHTML += post_content;
+
+                offset += FIXED_OFFSET;
+            }
+        });
+    }
+
+    window.addEventListener("scroll", (event) => {
+        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            tempfunc();
+        }
+    });
+
+</script>

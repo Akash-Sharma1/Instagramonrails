@@ -1,12 +1,12 @@
 class PostsController < ApplicationController
 
     def index
-        @POST_PER_PAGE = 2
+        @POST_PER_PAGE = 3
         @offset = params.fetch(:offset,0)
         @post = Post.offset(@offset).limit(@POST_PER_PAGE)
         respond_to do |format|
+            format.js{ render :partial => 'listposts' }
             format.html 
-            format.js
         end
     end
     def show

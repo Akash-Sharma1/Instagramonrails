@@ -1,49 +1,40 @@
 <h1>Listing Post</h1>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
- 
 
 <%= link_to 'New post', new_post_path %>
 
-<div id="content">
-    <%= render @post %>
-</div>
-
-<br/><br/>
-
 <script>
-    FIXED_OFFSET = <%= @POST_PER_PAGE %>
-    var offset = 0;
-    offset += FIXED_OFFSET;
 
-    function tempfunc(){
-        $.ajax({
-            type: "GET",
-            url: '<%= posts_path %>'+'?offset='+offset,
-            success: function(data){
-                
-                post_content = ""
-                let start_idx = data.indexOf("<div id=\"content\">") + "<div id=\"content\">".length;
-                if(start_idx == -1)return;
-                data = data.substr(start_idx, data.length)
-                
-                let end_idx = data.indexOf("</div>")
-                data = data.substr(0, end_idx)
+FIXED_OFFSET = <%= @POST_PER_PAGE %>;
+var offset = 0;
+var endofposts = false;
 
-                if(data.length < 10)return ;
-                
-                post_content = data;
-                document.getElementById("content").innerHTML += post_content;
+function tempfunc(){
+    if(endofposts)return;
 
-                offset += FIXED_OFFSET;
+    $.ajax({
+        type: "GET",
+        url: '<%= posts_path %>'+'?offset='+offset,
+        dataType: 'text',
+        success: function(data){
+            if(data == ""){
+                endofposts = true;
+                return;
             }
-        });
-    }
-
-    window.addEventListener("scroll", (event) => {
-        if($(window).scrollTop() + $(window).height() == $(document).height()) {
-            tempfunc();
+            offset += FIXED_OFFSET;
+            document.body.innerHTML += data;
         }
     });
+}
+
+console.log($(window).scrollTop() + $(window).height() , $(document).height()); 
+tempfunc();  
+
+window.addEventListener("scroll", (event) => {
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        tempfunc();
+    }
+});
 
 </script>
